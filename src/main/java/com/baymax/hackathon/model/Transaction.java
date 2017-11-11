@@ -1,13 +1,7 @@
 package com.baymax.hackathon.model;
 
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 
 /**
  * Created by npanthi on 11/11/2017.
@@ -24,29 +18,36 @@ public class Transaction {
     private String remarks;
     @JoinColumn(name="booking_id", referencedColumnName = "booking_id")
     private Booking booking;
-	public long getTransactionId() {
-		return transactionId;
-	}
-	public void setTransactionId(long transactionId) {
-		this.transactionId = transactionId;
-	}
-	public Date getTransactionDate() {
-		return transactionDate;
-	}
-	public void setTransactionDate(Date transactionDate) {
-		this.transactionDate = transactionDate;
-	}
-	public String getRemarks() {
-		return remarks;
-	}
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
-	public Booking getBooking() {
-		return booking;
-	}
-	public void setBooking(Booking booking) {
-		this.booking = booking;
-	}
-    
+
+    public long getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(long transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public Date getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(Date transactionDate) {
+        this.transactionDate = transactionDate;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public void setBooking(Booking booking) {
+        this.booking = booking;
+    }
 }
