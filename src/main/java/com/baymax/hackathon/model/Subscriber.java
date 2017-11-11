@@ -12,7 +12,7 @@ public class Subscriber implements Serializable{
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "subscriber_id")
-    private long subscriberId;
+    private Long subscriberId;
     @OneToMany
     private List<Transaction> transactions;
     @Column
@@ -32,11 +32,11 @@ public class Subscriber implements Serializable{
         this.location = location;
     }
 
-    public long getSubscriberId() {
+    public Long getSubscriberId() {
         return subscriberId;
     }
 
-    public void setSubscriberId(long subscriberId) {
+    public void setSubscriberId(Long subscriberId) {
         this.subscriberId = subscriberId;
     }
 

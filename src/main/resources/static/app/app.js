@@ -50,10 +50,19 @@ routerApp.controller('RegistrationController', function($scope, $http) {
 	});
 
 	$scope.submit = function() {
-		console.log($scope.firstName);
-		console.log($scope.selectedPlace.geometry.location.lat());
-		console.log($scope.selectedPlace.geometry.location.lng());
-		console.log($scope.userType);
+		var user = {
+			"transactions" : [],
+			"name" : $scope.firstName,
+			"location" : $scope.selectedPlace.formatted_address,
+			"latitude": $scope.selectedPlace.geometry.location.lat(),
+			"longitude": $scope.selectedPlace.geometry.location.lng()
+		};
+
+		if($scope.userType == "subscriber") {
+            $http.post("/subscriber", user);
+        } else {
+			$http.post("/publisher", user);
+		}
 	};
 });
 
