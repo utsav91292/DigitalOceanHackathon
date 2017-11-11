@@ -88,31 +88,51 @@ routerApp
 					map = new google.maps.Map(document
 							.getElementById("googleMap"), mapOptions);
 
+					$http.get("/publishers").then(
+							function(response) {
+								var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
+								$scope.publishers = response.data;
+								var bounds = new google.maps.LatLngBounds();
+								var infoWindow = new google.maps.InfoWindow();
+								angular.forEach($scope.publishers, function(
+										item, index) {
+									$scope.createMarker(map,
+											$scope.publishers[index], bounds, infoWindow, imagePath, true);
+								});
+								
+								map.fitBounds(bounds);
+							});
+					
 					$http.get("/subscribers").then(
 							function(response) {
+								var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/geocode-71.png';
 								$scope.subscribers = response.data;
 								var bounds = new google.maps.LatLngBounds();
 								var infoWindow = new google.maps.InfoWindow();
 								angular.forEach($scope.subscribers, function(
 										item, index) {
+									
 									$scope.createMarker(map,
-											$scope.subscribers[index], bounds, infoWindow);
+											$scope.subscribers[index], bounds, infoWindow, imagePath, false);
 								});
-								
-								map.fitBounds(bounds);
 							});
 
 					$scope.createMarker = function(map, markerData, bounds,
-							infoWindow) {
+							infoWindow, imagePath, extendBounds) {
 						var location = {
 							lat : markerData.latitude,
 							lng : markerData.longitude
 						};
+						var image = {
+								url : imagePath, scaledSize : new google.maps.Size(30, 30)
+							};
 						var marker = new google.maps.Marker({
 							position : location,
 							map : map,
-							title : markerData.location
+							title : markerData.location,
+							icon: image
 						});
+						if (extendBounds)
 						bounds.extend(new google.maps.LatLng(markerData.latitude, markerData.longitude));
 						marker.addListener('click', function() {
 							map.setCenter(marker.getPosition());
