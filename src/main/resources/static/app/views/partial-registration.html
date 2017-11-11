@@ -1,0 +1,12 @@
+<div class="jumbotron text-center">
+	<form novalidate>
+		Name:<br> <input type="text" ng-model="firstName"><br>
+		<br> <input id="pac-input" type="text" ng-model="location"
+			placeholder="Enter a location"> <br> 
+			<input type="radio"
+				ng-model="userType" value="hotel">Hotel
+			<input type="radio"
+				ng-model="userType" value="NGO">NGO<br>
+		<button ng-click="submit()">Submit</button>
+	</form>
+</div>
