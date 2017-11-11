@@ -1,4 +1,10 @@
 <div class="jumbotron text-center">
 	<div id="googleMap"></div>
 	
+	<table border="1">
+    <tr ng-repeat="x in subscribers">
+        <td>{{x.name}}</td>
+        <td>{{x.location}}</td>
+    </tr>
+</table>
 </div>

@@ -41,7 +41,7 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 });
 
 routerApp.controller('RegistrationController', function($scope, $http) {
-	$scope.userType="hotel";
+	$scope.userType = "hotel";
 	var input = document.getElementById('pac-input');
 	var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -70,20 +70,54 @@ routerApp.controller('ngoController', function($scope, $http) {
 
 });
 
-routerApp.controller('HotelController',
-		function($scope, $http) {
+routerApp
+		.controller('HotelController',
+				function($scope, $http, $rootScope) {
 
-			var map, infoWindow;
-			var markers = [];
+					var map, infoWindow;
+					var markers = [];
+					$scope.subscribers = [];
 
-			// map config
-			var mapOptions = {
-				center : new google.maps.LatLng(50, 2),
-				zoom : 4,
-				mapTypeId : google.maps.MapTypeId.ROADMAP,
-				scrollwheel : false
-			};
-			map = new google.maps.Map(document.getElementById("googleMap"),
-					mapOptions);
+					// map config
+					var mapOptions = {
+						center : new google.maps.LatLng(50, 2),
+						zoom : 4,
+						mapTypeId : google.maps.MapTypeId.ROADMAP,
+						scrollwheel : false
+					};
+					map = new google.maps.Map(document
+							.getElementById("googleMap"), mapOptions);
 
-		});
+					$http.get("/subscribers").then(
+							function(response) {
+								$scope.subscribers = response.data;
+								var bounds = new google.maps.LatLngBounds();
+								var infoWindow = new google.maps.InfoWindow();
+								angular.forEach($scope.subscribers, function(
+										item, index) {
+									$scope.createMarker(map,
+											$scope.subscribers[index], bounds, infoWindow);
+								});
+								
+								map.fitBounds(bounds);
+							});
+
+					$scope.createMarker = function(map, markerData, bounds,
+							infoWindow) {
+						var location = {
+							lat : markerData.latitude,
+							lng : markerData.longitude
+						};
+						var marker = new google.maps.Marker({
+							position : location,
+							map : map,
+							title : markerData.location
+						});
+						bounds.extend(new google.maps.LatLng(markerData.latitude, markerData.longitude));
+						marker.addListener('click', function() {
+							map.setCenter(marker.getPosition());
+							infoWindow.setContent(markerData.location);
+							infoWindow.open(map, marker);
+						});
+					}
+				});
