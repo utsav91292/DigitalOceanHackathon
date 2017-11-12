@@ -68,11 +68,15 @@ routerApp.controller('BookingController', function($scope, $http) {
     };
 
     $scope.lock = function(bookingId) {
-        $http.get("http://localhost:8080/booking/lock/" + bookingId + "/subscriber/" + myId);
+        $http.put("http://localhost:8080/booking/lock/" + bookingId + "/subscriber/" + myId);
     };
 
     $scope.notify = function(bookingId) {
-        $http.get("http://localhost:8080/booking/" + bookingId + "/publisher/" + myId);
+        $http.put("http://localhost:8080/booking/" + bookingId + "/publisher/" + myId);
+    };
+    
+    $scope.deliver = function(bookingId) {
+        $http.put("http://localhost:8080/booking/booking/"+ bookingId +"/deliver");
     };
 
     $scope.createNewBooking = function(description) {
@@ -81,7 +85,14 @@ routerApp.controller('BookingController', function($scope, $http) {
             publisherId : myId
         };
 
-        $http.post("http://localhost:8080/booking/publisher/" +  myId, booking)
+        $http.post("http://localhost:8080/booking/publisher/" +  myId, booking).then(function(response) {
+        	$http.get("http://localhost:8080/bookings/subscriber/" +  myId).then(function(response) {
+                subscriberBookings = response.data;
+            });
+            $http.get("http://localhost:8080/bookings/publisher/" +  myId).then(function(response) {
+                publisherBookings = response.data;
+            });
+        });
     }
 });
 

@@ -30,6 +30,9 @@ public class BookingService {
     private PublisherRepository publisherRepository;
     
     @Autowired
+    private SubscriberService subscribeService;
+    
+    @Autowired
     private MailSender mailSender;
     @Autowired
     private SubscriptionService subscriptionService;
@@ -55,7 +58,7 @@ public class BookingService {
 
     public void publishBooking(long bookingId) {
         Booking booking = bookingRepository.findOne(bookingId);
-        Set<Subscriber> subscribersForPublishers = subscriptionService.getSubscribersForPublishers(booking.getPublisherId());
+        List<Subscriber> subscribersForPublishers = subscribeService.getAllSubscribers(); 
         Publisher publisher = publisherRepository.findOne(booking.getPublisherId());
         for (Subscriber subscriber : subscribersForPublishers) {
         	mailSender.sendMail(booking, subscriber.getEmail(), publisher);
