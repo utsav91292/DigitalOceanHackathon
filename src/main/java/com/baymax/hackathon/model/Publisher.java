@@ -1,8 +1,14 @@
 package com.baymax.hackathon.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  * Created by npanthi on 11/11/2017.
@@ -17,6 +23,9 @@ public class Publisher implements Serializable{
     private List<Transaction> transactions;
     @Column
     private String name;
+    @Column
+    private String email;
+    
     @Column
     private double latitude;
     @Column
@@ -71,4 +80,12 @@ public class Publisher implements Serializable{
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

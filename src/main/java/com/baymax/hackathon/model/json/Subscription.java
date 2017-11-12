@@ -19,24 +19,24 @@ import com.baymax.hackathon.model.Subscriber;
  * Created by npanthi on 11/11/2017.
  */
 @Entity
-public class Subscription implements Serializable{
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name ="subscription_id")
-    private long subscriptionId;
+public class Subscription implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "subscription_id")
+	private long subscriptionId;
 
-    @JoinColumn(name = "subscriber_id")
-    private Subscriber subscriber;
+	@Column(name = "subscriber_id")
+	private long subscriberId;
 
-    @JoinColumn(name = "publisher_id")
-    private Publisher publisher;
+	@Column(name = "publisher_id")
+	private long publisherId;
 
-    @Column(name = "subscription_date")
-    private Date subscriptionDate;
+	@Column(name = "subscription_date")
+	private Date subscriptionDate;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private SubscriptionStatus status;
+	@Column(name = "status")
+	@Enumerated(EnumType.STRING)
+	private SubscriptionStatus status;
 
 	public long getSubscriptionId() {
 		return subscriptionId;
@@ -46,20 +46,20 @@ public class Subscription implements Serializable{
 		this.subscriptionId = subscriptionId;
 	}
 
-	public Subscriber getSubscriber() {
-		return subscriber;
+	public long getSubscriberId() {
+		return subscriberId;
 	}
 
-	public void setSubscriber(Subscriber subscriber) {
-		this.subscriber = subscriber;
+	public void setSubscriberId(long subscriberId) {
+		this.subscriberId = subscriberId;
 	}
 
-	public Publisher getPublisher() {
-		return publisher;
+	public long getPublisherId() {
+		return publisherId;
 	}
 
-	public void setPublisher(Publisher publisher) {
-		this.publisher = publisher;
+	public void setPublisherId(long publisherId) {
+		this.publisherId = publisherId;
 	}
 
 	public Date getSubscriptionDate() {
@@ -77,6 +77,5 @@ public class Subscription implements Serializable{
 	public void setStatus(SubscriptionStatus status) {
 		this.status = status;
 	}
-    
-    
+
 }

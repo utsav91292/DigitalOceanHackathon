@@ -18,6 +18,8 @@ public class Subscriber implements Serializable{
     @Column
     private String name;
     @Column
+    private String email;
+    @Column
     private String location;
     @Column
     private double latitude;
@@ -71,4 +73,12 @@ public class Subscriber implements Serializable{
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }
