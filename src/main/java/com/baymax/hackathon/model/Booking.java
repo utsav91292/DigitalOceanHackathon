@@ -57,6 +57,4 @@ public class Booking implements Serializable{
 	public void setSubscriberId(long subscriberId) {
 		this.subscriberId = subscriberId;
 	}
-    
-    
 }

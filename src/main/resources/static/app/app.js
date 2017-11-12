@@ -1,5 +1,6 @@
 var myLocationUrl;
 var relevantLocationUrls;
+var myId;
 var map;
 var myImageUrl;
 var relevantImageUrl;
@@ -30,6 +31,58 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 		templateUrl : './app/views/google-map.html',
 		controller : 'GoogleMapController'
 	})
+
+        .state('booking', {
+            url : '/booking',
+            templateUrl : './app/views/bookings.html',
+            controller : 'BookingController'
+        })
+});
+
+routerApp.controller('BookingController', function($scope, $http) {
+
+    $scope.bookings = [];
+    $scope.newBookingDescription = "";
+    var subscriberBookings = [];
+    var publisherBookings = [];
+
+    $http.get("http://localhost:8080/bookings/subscriber/" +  myId).then(function(response) {
+        subscriberBookings = response.data;
+    });
+    $http.get("http://localhost:8080/bookings/publisher/" +  myId).then(function(response) {
+        publisherBookings = response.data;
+    });
+
+    $scope.isSubscriberBookingPage = function() {
+        if(myLocationUrl.indexOf("subscriber") !== -1){
+            $scope.bookings = subscriberBookings;
+            return true;
+        }
+    };
+
+    $scope.isPublisherBookingPage = function() {
+        if(myLocationUrl.indexOf("publisher") !== -1) {
+            $scope.bookings = publisherBookings;
+            return true;
+        }
+    };
+
+    $scope.lock = function(bookingId) {
+        $http.get("http://localhost:8080/booking/lock/" + bookingId + "/subscriber/" + myId);
+    };
+
+    $scope.notify = function(bookingId) {
+        $http.get("http://localhost:8080/booking/" + bookingId + "/publisher/" + myId);
+    };
+
+    $scope.createNewBooking = function(description) {
+        var booking = {
+            description : description,
+            publisherId : myId
+        };
+
+        $http.post("http://localhost:8080/booking/publisher/" +  myId, booking)
+    }
 });
 
 routerApp.controller('LoginController', function($scope, $state) {
@@ -46,6 +99,7 @@ routerApp.controller('LoginController', function($scope, $state) {
             relevantImageUrl = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
         }
 
+        myId = $scope.myId;
         $state.go('mapview');
     };
 });

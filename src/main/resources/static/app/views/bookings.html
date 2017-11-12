@@ -1,0 +1,20 @@
+<div>
+    <div ng-if=isSubscriberBookingPage()>
+        <table>
+            <tr ng-repeat="booking in bookings">
+                <td>{{booking.description}}</td>
+                <td><a ng-click="lock(booking.bookingId)">Lock Booking</a></td>
+            </tr>
+        </table>
+    </div>
+    <div ng-if="isPublisherBookingPage()">
+        <input type="text" ng-model="newBookingDescription"/>
+        <button ng-click="createNewBooking(newBookingDescription)">New Booking</button>
+        <table>
+            <tr ng-repeat="booking in bookings">
+                <td>{{booking.description}}</td>
+                <td><a ng-click="notify(booking.bookingId)">Notify</a></td>
+            </tr>
+        </table>
+    </div>
+</div>

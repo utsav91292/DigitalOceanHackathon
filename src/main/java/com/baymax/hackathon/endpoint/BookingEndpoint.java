@@ -12,10 +12,12 @@ import com.baymax.hackathon.service.BookingService;
 import com.baymax.hackathon.service.PublisherService;
 import com.baymax.hackathon.service.SubscriberService;
 
+import java.util.List;
+
 /**
  * Created by npanthi on 11/11/2017.
  */
-@RestController("/booking")
+@RestController
 public class BookingEndpoint {
 
     @Autowired
@@ -28,7 +30,7 @@ public class BookingEndpoint {
     private SubscriberService subscriberService;
     
     @RequestMapping(
-            value = "/lock/{bookingId}/subscriber/{subscriberId}",
+            value = "/booking/lock/{bookingId}/subscriber/{subscriberId}",
             method = RequestMethod.PUT
     )
     public void lockBooking(@PathVariable long bookingId, @PathVariable long subscriberId) {
@@ -36,7 +38,7 @@ public class BookingEndpoint {
     }
 
     @RequestMapping(
-            value = "/{bookingId}/cancel",
+            value = "/booking/{bookingId}/cancel",
             method = RequestMethod.PUT
     )
     public void cancelBooking(long bookingId) {
@@ -52,7 +54,7 @@ public class BookingEndpoint {
     }
 
     @RequestMapping(
-            value = "booking/{bookingId}/publisher/{publisherId}",
+            value = "/booking/{bookingId}/publisher/{publisherId}",
             method = RequestMethod.PUT
     )
     public void publishBooking(@PathVariable long bookingId) {
@@ -60,11 +62,27 @@ public class BookingEndpoint {
     }
 
     @RequestMapping(
-            value = "/booking/{bookingId}/deliver",
+            value = "/booking/booking/{bookingId}/deliver",
             method = RequestMethod.PUT
     )
     public void deliverBooking(@PathVariable long bookingId) {
         bookingService.deliverBooking(bookingId);
     }
 
+    @RequestMapping(
+            value = "/bookings/subscriber/{subscriberId}",
+            method = RequestMethod.GET
+    )
+    public List<Booking> getAllBookingsForSubscriber(@PathVariable long subscriberId) {
+        return bookingService.findBySubscriber(subscriberId);
+    }
+
+
+    @RequestMapping(
+            value = "/bookings/publisher/{publisherId}",
+            method = RequestMethod.GET
+    )
+    public List<Booking> getAllBookingsForPublisher(@PathVariable long publisherId) {
+        return bookingService.findByPublisher(publisherId);
+    }
 }

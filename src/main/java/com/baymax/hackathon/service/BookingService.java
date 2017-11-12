@@ -1,5 +1,6 @@
 package com.baymax.hackathon.service;
 
+import java.util.List;
 import java.util.Set;
 
 import com.baymax.hackathon.model.Booking;
@@ -68,5 +69,13 @@ public class BookingService {
         Booking booking = bookingRepository.findOne(bookingId);
         booking.setBookingStatus(BookingStatus.DELIVERED);
         bookingRepository.save(booking);
+    }
+
+    public List<Booking> findByPublisher(long publisherId) {
+        return bookingRepository.findByPublisherId(publisherId);
+    }
+
+    public List<Booking> findBySubscriber(long subscriberId) {
+        return bookingRepository.findBySubscriberId(subscriberId);
     }
 }
