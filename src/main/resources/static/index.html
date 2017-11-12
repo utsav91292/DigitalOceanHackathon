@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>Food For All</title>
     <!-- CSS (load bootstrap) -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
     <style>
         .navbar { border-radius:0; }
         #googleMap {
 			width: 500px;
 			height: 500px;
+        }
+        body {
+        	background-image:url(./app/background.jpg)
+        }
+        #titleBar {
+        	background-color: darkred;
+        	color:#dbd5d2;
         }
     </style>
 
@@ -26,11 +33,11 @@
 <body ng-app="routerApp">
 
 <!-- NAVIGATION -->
-<nav class="navbar navbar-inverse" role="navigation">
+<nav class="navbar navbar-inverse" role="navigation" id="titleBar">
     <div class="navbar-header">
-        <a class="navbar-brand" ui-sref="#">Food For All</a>
+        <a class="navbar-brand" ui-sref="#" style="color:#dbd5d2;">FOOD FOR ALL</a>
     </div>
-    <ul class="nav navbar-nav">
+    <ul class="nav navbar-nav center" style="color:#dbd5d2">
         <li><a ui-sref="login">Login</a></li>
         <li><a ui-sref="mapview">Map View</a></li>
         <li><a ui-sref="register">Registration</a></li>

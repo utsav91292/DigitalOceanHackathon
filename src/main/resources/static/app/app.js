@@ -1,6 +1,8 @@
 var myLocationUrl;
 var relevantLocationUrls;
 var map;
+var myImageUrl;
+var relevantImageUrl;
 
 var routerApp = angular.module('routerApp', [ 'ui.router' ]);
 
@@ -35,9 +37,13 @@ routerApp.controller('LoginController', function($scope, $state) {
         if($scope.userType == "publisher") {
             myLocationUrl = "http://localhost:8080/publisher/" + $scope.myId;
             relevantLocationUrls = "http://localhost:8080/subscribers";
+            myImageUrl = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
+            relevantImageUrl = 'https://maps.gstatic.com/mapfiles/place_api/icons/geocode-71.png';
         } else {
             myLocationUrl = "http://localhost:8080/subscriber/" + $scope.myId;
-				relevantLocationUrls = "http://localhost:8080/publishers";
+			relevantLocationUrls = "http://localhost:8080/publishers";
+			myImageUrl = 'https://maps.gstatic.com/mapfiles/place_api/icons/geocode-71.png';
+            relevantImageUrl = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
         }
 
         $state.go('mapview');
@@ -70,7 +76,15 @@ routerApp.controller('RegistrationController', function($scope, $http) {
 	};
 });
 
-routerApp.controller('GoogleMapController', function($scope, GoogleMapModelService) {
+routerApp.controller('GoogleMapController', function($scope, GoogleMapModelService, $state) {
+	
+	$scope.zoomToLocation = function(selectedLocation) {
+		bounds = new google.maps.LatLngBounds(); 
+		bounds.extend(new google.maps.LatLng(selectedLocation.latitude, selectedLocation.longitude));
+		map.fitBounds(bounds);
+	}
+	if (myLocationUrl == undefined)
+		$state.go('login');
 	GoogleMapModelService.loadMap();
 
 	$scope.getRelevantLocations = function() {
@@ -95,42 +109,39 @@ routerApp.service('GoogleMapModelService', function($http) {
         infoWindow = new google.maps.InfoWindow();
     }
 
-    if(!bounds) {
-        bounds = new google.maps.LatLngBounds();
-    }
+    bounds = new google.maps.LatLngBounds();
 
-    if(!map) {
-        var mapOptions = {
-            center : new google.maps.LatLng(50, 2),
-            zoom : 4,
-            mapTypeId : google.maps.MapTypeId.ROADMAP,
-            scrollwheel : false
-        };
-        map = new google.maps.Map(document
-            .getElementById("googleMap"), mapOptions);
-    }
+    var mapOptions = {
+        center : new google.maps.LatLng(50, 2),
+        zoom : 4,
+        mapTypeId : google.maps.MapTypeId.ROADMAP,
+        scrollwheel : false
+    };
+    map = new google.maps.Map(document
+        .getElementById("googleMap"), mapOptions);
 
     function loadMap() {
         loadMyLocation(myLocationUrl);
-        loadRelevantLocations(relevantLocationUrls);
     }
 
     function loadMyLocation(myLocationUrl) {
         $http.get(myLocationUrl).then(
 		function (response) {
-			 var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
 			service.myLocation = response.data;
-			createMarker(map, service.myLocation, bounds, infoWindow, imagePath, false);
+			createMarker(map, service.myLocation, bounds, infoWindow, myImageUrl, true);
+			loadRelevantLocations(relevantLocationUrls);
+			map.fitBounds(bounds);
 		});
     }
 
     function loadRelevantLocations(relevantLocationUrl) {
         $http.get(relevantLocationUrl).then(
             function (response) {
-                var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/geocode-71.png';
                 service.relevantLocations = response.data;
                 angular.forEach(service.relevantLocations, function (item, index) {
-                    createMarker(map, service.relevantLocations[index], bounds, infoWindow, imagePath, false);
+                	var distance = getDistanceFromLatLonInKm(service.myLocation.latitude,service.myLocation.longitude,service.relevantLocations[index].latitude,service.relevantLocations[index].longitude);
+                	service.relevantLocations[index].distance = distance.toFixed(2);
+                    createMarker(map, service.relevantLocations[index], bounds, infoWindow, relevantImageUrl, false);
                 });
             });
     }
@@ -154,10 +165,10 @@ routerApp.service('GoogleMapModelService', function($http) {
 
         if (extendBounds)
             bounds.extend(new google.maps.LatLng(markerData.latitude, markerData.longitude));
-        marker.addListener('click', function() {
-            map.setCenter(marker.getPosition());
-            infoWindow.setContent(markerData.location);
-            infoWindow.open(map, marker);
+        	marker.addListener('click', function() {
+	            map.setCenter(marker.getPosition());
+	            infoWindow.setContent(markerData.location);
+	            infoWindow.open(map, marker);
         });
     }
 
