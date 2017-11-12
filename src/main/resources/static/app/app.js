@@ -117,6 +117,7 @@ routerApp.controller('LoginController', function($scope, $state) {
 
 routerApp.controller('RegistrationController', function($scope, $http) {
 	$scope.userType = "hotel";
+	$scope.email='';
 	var input = document.getElementById('pac-input');
 	var autocomplete = new google.maps.places.Autocomplete(input);
 
@@ -128,6 +129,7 @@ routerApp.controller('RegistrationController', function($scope, $http) {
 		var user = {
 			"transactions" : [],
 			"name" : $scope.firstName,
+			"email" : $scope.email,
 			"location" : $scope.selectedPlace.formatted_address,
 			"latitude": $scope.selectedPlace.geometry.location.lat(),
 			"longitude": $scope.selectedPlace.geometry.location.lng()

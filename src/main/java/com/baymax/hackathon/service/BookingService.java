@@ -79,6 +79,6 @@ public class BookingService {
     }
 
     public List<Booking> findBySubscriber(long subscriberId) {
-        return bookingRepository.findBySubscriberId(subscriberId);
+        return (List<Booking>) bookingRepository.findAll();
     }
 }
