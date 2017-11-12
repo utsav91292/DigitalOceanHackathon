@@ -3,10 +3,7 @@ package com.baymax.hackathon.endpoint;
 import com.baymax.hackathon.model.Subscriber;
 import com.baymax.hackathon.service.SubscriberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,9 +21,14 @@ public class SubscriberEndpoint {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/subscribers")
-    public List<Subscriber> createSubscriber(){
+    public List<Subscriber> getAllSubscribers(){
     	List<Subscriber> allSubscribers = subscriberService.getAllSubscribers();
         return allSubscribers;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/subscriber/{subscriberId}")
+    public Subscriber getSubscriber(@PathVariable Long subscriberId) {
+        return subscriberService.getSubscriber(subscriberId);
     }
 
 }

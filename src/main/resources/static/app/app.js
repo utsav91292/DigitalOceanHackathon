@@ -1,12 +1,21 @@
+var myLocationUrl;
+var relevantLocationUrls;
+var map;
+
 var routerApp = angular.module('routerApp', [ 'ui.router' ]);
 
 routerApp.config(function($stateProvider, $urlRouterProvider) {
 
-	$urlRouterProvider.otherwise('/hotel');
+	$urlRouterProvider.otherwise('/login');
 
 	$stateProvider
 
 	// HOME STATES AND NESTED VIEWS ========================================
+	.state('login', {
+		url: '/login',
+		templateUrl: './app/views/login.html',
+		controller: 'LoginController'
+	})
 
 	.state('register', {
 		url : '/register',
@@ -14,30 +23,25 @@ routerApp.config(function($stateProvider, $urlRouterProvider) {
 		controller : 'RegistrationController'
 	})
 
-	.state('hotel', {
-		url : '/hotel',
-		templateUrl : './app/views/partial-hotel.html',
-		controller : 'HotelController'
+	.state('mapview', {
+		url : '/mapview',
+		templateUrl : './app/views/google-map.html',
+		controller : 'GoogleMapController'
 	})
+});
 
-	// ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
-	.state('ngo', {
-		url : '/ngo',
-		views : {
-			'' : {
-				templateUrl : './app/views/partial-ngo.html'
-			},
-			'columnOne@about' : {
-				template : 'Look I am a column!'
-			},
-			'columnTwo@about' : {
-				templateUrl : './app/views/table-data.html',
-				controller : 'ngoController'
-			}
-		}
+routerApp.controller('LoginController', function($scope, $state) {
+	$scope.submit = function() {
+        if($scope.userType == "publisher") {
+            myLocationUrl = "http://localhost:8080/publisher/" + $scope.myId;
+            relevantLocationUrls = "http://localhost:8080/subscribers";
+        } else {
+            myLocationUrl = "http://localhost:8080/subscriber/" + $scope.myId;
+				relevantLocationUrls = "http://localhost:8080/publishers";
+        }
 
-	});
-
+        $state.go('mapview');
+    };
 });
 
 routerApp.controller('RegistrationController', function($scope, $http) {
@@ -66,78 +70,96 @@ routerApp.controller('RegistrationController', function($scope, $http) {
 	};
 });
 
-routerApp.controller('ngoController', function($scope, $http) {
+routerApp.controller('GoogleMapController', function($scope, GoogleMapModelService) {
+	GoogleMapModelService.loadMap();
 
+	$scope.getRelevantLocations = function() {
+		return GoogleMapModelService.relevantLocations;
+	}
 });
 
-routerApp
-		.controller('HotelController',
-				function($scope, $http, $rootScope) {
 
-					var map, infoWindow;
-					var markers = [];
-					$scope.subscribers = [];
 
-					// map config
-					var mapOptions = {
-						center : new google.maps.LatLng(50, 2),
-						zoom : 4,
-						mapTypeId : google.maps.MapTypeId.ROADMAP,
-						scrollwheel : false
-					};
-					map = new google.maps.Map(document
-							.getElementById("googleMap"), mapOptions);
+routerApp.service('GoogleMapModelService', function($http) {
+    var service = {
+        myLocation : {},
+        markers : [],
+        relevantLocations : [],
+        loadMap : loadMap
+    };
 
-					$http.get("/publishers").then(
-							function(response) {
-								var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
-								$scope.publishers = response.data;
-								var bounds = new google.maps.LatLngBounds();
-								var infoWindow = new google.maps.InfoWindow();
-								angular.forEach($scope.publishers, function(
-										item, index) {
-									$scope.createMarker(map,
-											$scope.publishers[index], bounds, infoWindow, imagePath, true);
-								});
-								
-								map.fitBounds(bounds);
-							});
-					
-					$http.get("/subscribers").then(
-							function(response) {
-								var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/geocode-71.png';
-								$scope.subscribers = response.data;
-								var bounds = new google.maps.LatLngBounds();
-								var infoWindow = new google.maps.InfoWindow();
-								angular.forEach($scope.subscribers, function(
-										item, index) {
-									
-									$scope.createMarker(map,
-											$scope.subscribers[index], bounds, infoWindow, imagePath, false);
-								});
-							});
+    var infoWindow;
+    var bounds;
 
-					$scope.createMarker = function(map, markerData, bounds,
-							infoWindow, imagePath, extendBounds) {
-						var location = {
-							lat : markerData.latitude,
-							lng : markerData.longitude
-						};
-						var image = {
-								url : imagePath, scaledSize : new google.maps.Size(30, 30)
-							};
-						var marker = new google.maps.Marker({
-							position : location,
-							map : map,
-							title : markerData.location,
-							icon: image
-						});
-						if (extendBounds)
-						bounds.extend(new google.maps.LatLng(markerData.latitude, markerData.longitude));
-						marker.addListener('click', function() {
-							map.setCenter(marker.getPosition());
-							infoWindow.setContent(markerData.location);
-							infoWindow.open(map, marker);
-						});
-					}
-				});
+    if(!infoWindow) {
+        infoWindow = new google.maps.InfoWindow();
+    }
+
+    if(!bounds) {
+        bounds = new google.maps.LatLngBounds();
+    }
+
+    if(!map) {
+        var mapOptions = {
+            center : new google.maps.LatLng(50, 2),
+            zoom : 4,
+            mapTypeId : google.maps.MapTypeId.ROADMAP,
+            scrollwheel : false
+        };
+        map = new google.maps.Map(document
+            .getElementById("googleMap"), mapOptions);
+    }
+
+    function loadMap() {
+        loadMyLocation(myLocationUrl);
+        loadRelevantLocations(relevantLocationUrls);
+    }
+
+    function loadMyLocation(myLocationUrl) {
+        $http.get(myLocationUrl).then(
+		function (response) {
+			 var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png';
+			service.myLocation = response.data;
+			createMarker(map, service.myLocation, bounds, infoWindow, imagePath, false);
+		});
+    }
+
+    function loadRelevantLocations(relevantLocationUrl) {
+        $http.get(relevantLocationUrl).then(
+            function (response) {
+                var imagePath = 'https://maps.gstatic.com/mapfiles/place_api/icons/geocode-71.png';
+                service.relevantLocations = response.data;
+                angular.forEach(service.relevantLocations, function (item, index) {
+                    createMarker(map, service.relevantLocations[index], bounds, infoWindow, imagePath, false);
+                });
+            });
+    }
+
+    function createMarker(map, markerData, bounds, infoWindow, imagePath, extendBounds) {
+        var location = {
+            lat : markerData.latitude,
+            lng : markerData.longitude
+        };
+
+        var image = {
+            url : imagePath, scaledSize : new google.maps.Size(30, 30)
+        };
+
+        var marker = new google.maps.Marker({
+            position : location,
+            map : map,
+            title : markerData.location,
+            icon: image
+        });
+
+        if (extendBounds)
+            bounds.extend(new google.maps.LatLng(markerData.latitude, markerData.longitude));
+        marker.addListener('click', function() {
+            map.setCenter(marker.getPosition());
+            infoWindow.setContent(markerData.location);
+            infoWindow.open(map, marker);
+        });
+    }
+
+    return service;
+});

@@ -3,10 +3,7 @@ package com.baymax.hackathon.endpoint;
 import com.baymax.hackathon.model.Publisher;
 import com.baymax.hackathon.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +23,10 @@ public class PublisherEndpoint {
     @RequestMapping(method = RequestMethod.GET, value = "/publishers")
     public List<Publisher> getAllPublishers() {
         return publisherService.getAllPublishers();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/publisher/{publisherId}")
+    public Publisher getPublisher(@PathVariable long publisherId) {
+        return publisherService.getPublisher(publisherId);
     }
 }

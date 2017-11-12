@@ -23,4 +23,8 @@ public class SubscriberService {
     public List<Subscriber> getAllSubscribers() {
         return (List<Subscriber>) subscriberRepository.findAll();
     }
+
+    public Subscriber getSubscriber(Long subscriberId) {
+        return subscriberRepository.findOne(subscriberId);
+    }
 }
